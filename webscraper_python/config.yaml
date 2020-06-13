@@ -1,0 +1,25 @@
+news_sites:
+  eluniversal:
+    url: https://www.eluniversal.com.mx
+    queries:
+      homepage_article_links : '.field-content a'
+      article_body: '.field-name-body'
+      article_title: '.pnae-content h1'
+  elpais:
+    url: https://elpais.com
+    queries:
+      homepage_article_links : '.headline a'
+      article_body: ''
+      article_title: ''
+  eltiempo:
+    url: https://www.eltiempo.com
+    queries:
+      homepage_article_links: '.title-container a'
+      article_body: ''
+      article_title: ''
+  cnn:
+    url: https://cnnespanol.cnn.com
+    queries:
+      homepage_article_links: '.news__title a'
+      article_body: ''
+      article_title: ''
