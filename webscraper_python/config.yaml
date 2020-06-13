@@ -21,5 +21,4 @@ news_sites:
     url: https://cnnespanol.cnn.com
     queries:
       homepage_article_links: '.news__title a'
-      article_body: ''
-      article_title: ''
+      
