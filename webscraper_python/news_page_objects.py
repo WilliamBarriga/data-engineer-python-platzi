@@ -42,7 +42,11 @@ class Articlepage(NewsPage):
     @property
     def body(self):
         result = self._select(self._queries['article_body'])
-        return result[0].text if len(result) else 'sorry baby UwU'
+        texto = " "
+        if len(result) > 0:
+            for i in result:
+                texto += " " + i.text
+        return texto if len(result) else 'sorry baby UwU'
 
     @property
     def title(self):
