@@ -30,7 +30,7 @@ def _news_scraper(news_site_uid):
         if article:
             logger.info('article fetched!! ')
             articles.append(article)
-            break
+            # break
             # print(article.title)
 
     _save_articles(news_site_uid, articles)
@@ -50,8 +50,11 @@ def _save_articles(news_site_uid, articles):
         writer.writerow(csv_headers)
 
         for article in articles:
-            row = [str(getattr(article, prop)) for prop in csv_headers]
-            writer.writerow(row)
+            try:
+                row = [str(getattr(article, prop)) for prop in csv_headers]
+                writer.writerow(row)
+            except (UnicodeError, UnicodeEncodeError):
+                logger.warning('error while fetching the article UnicodeError', exc_info=False)
 
 
 def _fetch_article(news_site_uid, host, link):
@@ -61,7 +64,7 @@ def _fetch_article(news_site_uid, host, link):
     try:
         article = news.Articlepage(news_site_uid, _build_link(host, link))
     except (HTTPError, MaxRetryError) as e:
-        logger.warning('error while fetching the article', exc_info=False)
+        logger.warning('error while fetching the article HTTPError or MaxRetryError', exc_info=False)
 
     if article and not article.body:
         logger.warning('invalid article. there is no body')

@@ -37,18 +37,23 @@ class HomePage(NewsPage):
 
 class Articlepage(NewsPage):
     def __init__(self, news_site_uid, url):
+        self._url = url
         super().__init__(news_site_uid, url)
 
     @property
     def body(self):
         result = self._select(self._queries['article_body'])
-        texto = " "
+        text = " "
         if len(result) > 0:
             for i in result:
-                texto += " " + i.text
-        return texto if len(result) else 'sorry baby UwU'
+                text += " " + i.text
+        return text if len(result) else 'no text in the body'
 
     @property
     def title(self):
         result = self._select(self._queries['article_title'])
-        return result[0].text if len(result) else 'sorry baby UwU'
+        return result[0].text if len(result) else 'no text in the title'
+
+    @property
+    def url(self):
+        return self._url
