@@ -47,12 +47,12 @@ class Articlepage(NewsPage):
         if len(result) > 0:
             for i in result:
                 text += " " + i.text
-        return text if len(result) else 'no text in the body'
+        return text if len(result) else ''
 
     @property
     def title(self):
         result = self._select(self._queries['article_title'])
-        return result[0].text if len(result) else 'no text in the title'
+        return result[0].text if len(result) else ''
 
     @property
     def url(self):

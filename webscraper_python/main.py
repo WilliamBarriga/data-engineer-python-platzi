@@ -58,7 +58,7 @@ def _save_articles(news_site_uid, articles):
 
 
 def _fetch_article(news_site_uid, host, link):
-    logger.info('start fetching article ar{}'.format(link))
+    logger.info('start fetching article {}'.format(link))
 
     article = None
     try:
