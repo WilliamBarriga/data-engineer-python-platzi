@@ -2,11 +2,19 @@ import argparse
 import logging
 import pandas as pd
 import hashlib
+import nltk
 from urllib.parse import urlparse
+from nltk.corpus import stopwords
+
+# nltk.download('punkt')
+# nltk.download('stopwords')
+
 
 logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
+
+stop_words = set(stopwords.words('spanish'))
 
 
 def main(filename):
@@ -19,8 +27,12 @@ def main(filename):
     df = _fill_missing_titles(df)
     df = _generate_uids_for_rows(df)
     df = _remove_new_lines_from_body(df)
-
-    print(df)
+    df = _tokenize_column_title(df)
+    df = _tokenize_column_body(df)
+    df = _remove_duplicates_entries(df, 'title')
+    df = _drop_rows_with_missing_values(df)
+    _save_data(df, filename)
+    # print(df)
 
     return df
 
@@ -88,7 +100,56 @@ def _remove_new_lines_from_body(df):
                      .apply(lambda letters: ''.join(letters))
                      )
     df['body'] = stripped_body
+
     return df
+
+
+def _tokenize_column(df, column_name):
+    return (df.dropna()
+            .apply(lambda row: nltk.word_tokenize(row[column_name]), axis=1)
+            .apply(lambda tokens: list(filter(lambda token: token.isalpha(), tokens)))
+            .apply(lambda tokens: list(map(lambda token: token.lower(), tokens)))
+            .apply(lambda word_list: list(filter(lambda word: word not in stop_words, word_list)))
+            .apply(lambda valid_word_list: len(valid_word_list))
+            )
+
+
+def _tokenize_column_title(df):
+    logger.info('tokenize title')
+
+    df['n_tokens_title'] = _tokenize_column(df, 'title')
+
+    return df
+
+
+def _tokenize_column_body(df):
+    logger.info('tokenize body')
+
+    df['m_tokens_body'] = _tokenize_column(df, 'body')
+
+    return df
+
+
+def _remove_duplicates_entries(df, column_name):
+    logger.info('removing duplicate entries')
+
+    df.drop_duplicates(subset=[column_name], keep='first', inplace=True)
+
+    return df
+
+
+def _drop_rows_with_missing_values(df):
+    logger.info('dropping rows without values')
+
+    return df.dropna()
+
+
+def _save_data(df, filename):
+    clean_filename = 'clean_{}'.format(filename)
+
+    logger.info('saving data at location {}'.format(clean_filename))
+
+    df.to_csv(clean_filename)
 
 
 if __name__ == '__main__':
@@ -99,4 +160,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     df = main(args.filename)
+
     print(df)
